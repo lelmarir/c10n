@@ -56,6 +56,7 @@ import static org.junit.Assert.assertThat;
  */
 public class ExternalResourceTest {
     private static final String NL = System.getProperty("line.separator");
+	private static final int HTTP_PORT = 1;
     @Rule
     public UsingTmpDir tmp = RuleUtils.tmpDir("ExtResTest");
     @Rule
@@ -106,8 +107,8 @@ public class ExternalResourceTest {
     public void httpResourceTest() throws Exception {
         final String text = "hello" + NL + "http" + NL + "world!";
         final String path = "/english.txt";
-        final int port = 50800;
-        HttpServer httpServer = serveTextOverHttp(text, path, port);
+       
+        HttpServer httpServer = serveTextOverHttp(text, path, HTTP_PORT);
 
         try {
             httpServer.start();
@@ -253,7 +254,7 @@ public class ExternalResourceTest {
     }
 
     interface HttpMessages {
-        @En(extRes = "http://localhost:50800/english.txt")
+        @En(extRes = "http://localhost:"+HTTP_PORT+"/english.txt")
         String textOverHttp();
     }
 

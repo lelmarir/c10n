@@ -20,6 +20,14 @@
 
 package com.github.rodionmoiseev.c10n.tools;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Locale;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
+
 import com.github.rodionmoiseev.c10n.C10N;
 import com.github.rodionmoiseev.c10n.C10NConfigBase;
 import com.github.rodionmoiseev.c10n.C10NMessages;
@@ -32,94 +40,88 @@ import com.github.rodionmoiseev.c10n.tools.inspector.AbstractC10NInspectorTest;
 import com.github.rodionmoiseev.c10n.tools.inspector.C10NInspector;
 import com.github.rodionmoiseev.c10n.tools.inspector.C10NUnit;
 import com.github.rodionmoiseev.c10n.tools.inspector.DummyInstanceProvider;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * @author rodion
  * @since 1.1
  */
 public class C10NToolsTest extends AbstractC10NInspectorTest {
-    @Rule
-    public TestRule tmpC10N = RuleUtils.tmpC10NConfiguration();
+	@Rule
+	public TestRule tmpC10N = RuleUtils.tmpC10NConfiguration();
 
-    /*
-     * 1. checks that only english and japanese locales are checked for,
-     *    and french locale is excluded
-     * 2. checked that dummy instance provider is used instead of the default one
-     */
-    @Test
-    public void builderHonorsCheckLocalesAndDummyInstanceProvider() {
-        C10NInspector inspector = C10NTools.inspectorBuilder()
-                .checkLocales(Locale.ENGLISH, Locale.JAPANESE)
-                .dummyInstanceProvider(new MyDummyInstanceProvider())
-                .module(C10N.configure(new DefaultC10NAnnotations()))
-                .build();
+	/*
+	 * 1. checks that only english and japanese locales are checked for, and french
+	 * locale is excluded 2. checked that dummy instance provider is used instead of
+	 * the default one
+	 */
+	@Test
+	public void builderHonorsCheckLocalesAndDummyInstanceProvider() {
+		C10NInspector inspector = C10NTools.inspectorBuilder().checkLocales(Locale.ENGLISH, Locale.JAPANESE)
+				.dummyInstanceProvider(new MyDummyInstanceProvider())
+				.module(C10N.configure(new DefaultC10NAnnotations())).build();
 
-        List<C10NUnit> units = inspector.inspect(getClass().getPackage().getName());
-        checkUnit(units,
-                C10NToolsTestMsg.class, method("greeting", String.class),
-                anyKey(),
-                annotationTr(Locale.ENGLISH, "[en]Hello, dummy!", "[en]Hello, {0}!"),
-                annotationTr(Locale.JAPANESE, "[ja]Hello, dummy!", "[ja]Hello, {0}!"));
-    }
+		List<C10NUnit> units = inspector.inspect(getClass().getPackage().getName());
+		checkUnit(units, C10NToolsTestMsg.class, method("greeting", String.class), anyKey(),
+				annotationTr(Locale.ENGLISH, "[en]Hello, dummy!", "[en]Hello, {0}!"),
+				annotationTr(Locale.JAPANESE, "[ja]Hello, dummy!", "[ja]Hello, {0}!"));
+	}
 
-    @Test
-    public void builderHonorsFetchTranslations() {
-        C10NInspector inspector = C10NTools.inspectorBuilder()
-                .checkLocales(Locale.ENGLISH, Locale.FRENCH)
-                .fetchTranslations(false)
-                .module(C10N.configure(new DefaultC10NAnnotations()))
-                .build();
-        List<C10NUnit> units = inspector.inspect(getClass().getPackage().getName());
-        checkUnit(units,
-                C10NToolsTestMsg.class, method("greeting", String.class),
-                anyKey(),
-                annotationTr(Locale.ENGLISH, null),
-                annotationTr(Locale.FRENCH, null));
-    }
+	@Test
+	public void builderHonorsFetchTranslations() {
+		C10NInspector inspector = C10NTools.inspectorBuilder().checkLocales(Locale.ENGLISH, Locale.FRENCH)
+				.fetchTranslations(false).module(C10N.configure(new DefaultC10NAnnotations())).build();
+		List<C10NUnit> units = inspector.inspect(getClass().getPackage().getName());
+		checkUnit(units, C10NToolsTestMsg.class, method("greeting", String.class), anyKey(),
+				annotationTr(Locale.ENGLISH, null), annotationTr(Locale.FRENCH, null));
+	}
 
-    /*
-     * 1. Builder should use the last configuration set with C10N.configure
-     * 2. Locales to check are set to those used in the config
-     * 3. dummy instance provider is the default one
-     * 4. translations are fetched by default
-     */
-    @Test
-    public void builderUsesSensibleDefaultValues() {
-        C10N.configure(new C10NConfigBase() {
-            @Override
-            protected void configure() {
-                bindAnnotation(En.class).toLocale(Locale.ENGLISH);
-                bindAnnotation(Ja.class).toLocale(Locale.JAPANESE);
-            }
-        });
-        C10NInspector inspector = C10NTools.inspectorBuilder().build();
-        List<C10NUnit> units = inspector.inspect(getClass().getPackage().getName());
-        checkUnit(units,
-                C10NToolsTestMsg.class, method("greeting", String.class),
-                anyKey(),
-                annotationTr(Locale.ENGLISH, "[en]Hello, {0}!", "[en]Hello, {0}!"),
-                annotationTr(Locale.JAPANESE, "[ja]Hello, {0}!", "[ja]Hello, {0}!"));
-    }
+	/*
+	 * 1. Builder should use the last configuration set with C10N.configure 2.
+	 * Locales to check are set to those used in the config 3. dummy instance
+	 * provider is the default one 4. translations are fetched by default
+	 */
+	@Test
+	public void builderUsesSensibleDefaultValues() {
+		C10N.configure(new C10NConfigBase() {
+			@Override
+			protected void configure() {
+				bindAnnotation(En.class).toLocale(Locale.ENGLISH);
+				bindAnnotation(Ja.class).toLocale(Locale.JAPANESE);
+			}
+		});
+		C10NInspector inspector = C10NTools.inspectorBuilder().build();
+		List<C10NUnit> units = inspector.inspect(getClass().getPackage().getName());
+		checkUnit(units, C10NToolsTestMsg.class, method("greeting", String.class), anyKey(),
+				annotationTr(Locale.ENGLISH, "[en]Hello, {0}!", "[en]Hello, {0}!"),
+				annotationTr(Locale.JAPANESE, "[ja]Hello, {0}!", "[ja]Hello, {0}!"));
+	}
 
-    private static class MyDummyInstanceProvider implements DummyInstanceProvider {
-        @Override
-        public Object getInstance(Class<?> c10nInterface, Method method, Class<?> paramType, int paramIndex) {
-            return "dummy";
-        }
-    }
+	private static class MyDummyInstanceProvider implements DummyInstanceProvider {
+		@Override
+		public Object getInstance(Class<?> c10nInterface, Method method, Class<?> paramType, int paramIndex) {
+			if (String.class.isAssignableFrom(paramType)) {
+				return "dummy";
+			} else if (Integer.class.isAssignableFrom(paramType) || int.class.isAssignableFrom(paramType)) {
+				return 0;
+			} else if (Byte.class.isAssignableFrom(paramType) || byte.class.isAssignableFrom(paramType)) {
+				return (byte) 0;
+			} else if (Long.class.isAssignableFrom(paramType) || long.class.isAssignableFrom(paramType)) {
+				return 0l;
+			} else if (Float.class.isAssignableFrom(paramType) || float.class.isAssignableFrom(paramType)) {
+				return 0f;
+			} else if (Double.class.isAssignableFrom(paramType) || double.class.isAssignableFrom(paramType)) {
+				return 0d;
+			} else {
+				throw new IllegalArgumentException("Unsuported parameter type: " + paramType);
+			}
+		}
+	}
 
-    @C10NMessages
-    public interface C10NToolsTestMsg {
-        @En("[en]Hello, {0}!")
-        @Ja("[ja]Hello, {0}!")
-        @Fr("[fr]Hello, {0}!")
-        String greeting(String name);
-    }
+	@C10NMessages
+	public interface C10NToolsTestMsg {
+		@En("[en]Hello, {0}!")
+		@Ja("[ja]Hello, {0}!")
+		@Fr("[fr]Hello, {0}!")
+		String greeting(String name);
+	}
 }

@@ -26,7 +26,33 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+<scm>
+		<developerConnection>scm:git:git@dev.bc.local:devs/c10n.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
+	<repositories>
+		<repository>
+			<id>bc.repo.snapshots</id>
+			<url>http://dev.digibelt.com:8081/repository/snapshots/</url>
+		</repository>
+		<repository>
+			<id>bc.repo</id>
+			<url>http://dev.digibelt.com:8081/repository/releases/</url>
+		</repository>
+	</repositories>
+  
+	<distributionManagement>
+		<snapshotRepository>
+			<id>bc.repo.snapshots</id>
+			<url>http://dev.digibelt.com:8081/repository/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>bc.repo</id>
+			<url>http://dev.digibelt.com:8081/repository/releases/</url>
+		</repository>
+	</distributionManagement>
+	
   <dependencies>    
   </dependencies>
 

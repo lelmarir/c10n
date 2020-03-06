@@ -30,6 +30,7 @@ import org.reflections.util.FilterBuilder;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 
 class DefaultC10NInterfaceSearch implements C10NInterfaceSearch {
@@ -44,9 +45,9 @@ class DefaultC10NInterfaceSearch implements C10NInterfaceSearch {
 
     private Set<URL> getPackageURLs(String... packagePrefixes) {
         Iterable<URL> packages = Iterables.concat(Iterables.transform(
-                Arrays.asList(packagePrefixes), new Function<String, Set<URL>>() {
+                Arrays.asList(packagePrefixes), new Function<String, Collection<URL>>() {
             @Override
-            public Set<URL> apply(String prefix) {
+            public Collection<URL> apply(String prefix) {
                 return ClasspathHelper.forPackage(prefix);
             }
         }));

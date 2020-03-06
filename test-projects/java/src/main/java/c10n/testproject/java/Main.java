@@ -20,10 +20,10 @@
 
 package c10n.testproject.java;
 
-import c10n.C10N;
-import c10n.C10NConfigBase;
-import c10n.annotations.DefaultC10NAnnotations;
-import c10n.annotations.En;
+import com.github.rodionmoiseev.c10n.C10N;
+import com.github.rodionmoiseev.c10n.C10NConfigBase;
+import com.github.rodionmoiseev.c10n.annotations.DefaultC10NAnnotations;
+import com.github.rodionmoiseev.c10n.annotations.En;
 
 import java.util.Locale;
 
@@ -43,8 +43,8 @@ public class Main {
     /*
      * Parse arguments
      */
-    boolean showHelp = false;
-    Locale locale = Locale.ENGLISH;
+    boolean showHelp = true;
+    Locale locale = Locale.JAPAN;
     String action = "none";
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];

@@ -20,9 +20,9 @@
 
 package c10n.testproject.java;
 
-import c10n.annotations.En;
-import c10n.annotations.Ja;
-import c10n.annotations.Ru;
+import com.github.rodionmoiseev.c10n.annotations.En;
+import com.github.rodionmoiseev.c10n.annotations.Ja;
+import com.github.rodionmoiseev.c10n.annotations.Ru;
 
 /**
  * @author rodion

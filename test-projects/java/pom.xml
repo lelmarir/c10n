@@ -8,14 +8,19 @@
     <artifactId>c10n-root</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>c10n-ext-guice</artifactId>
+  <artifactId>c10n-java-test-project</artifactId>
 
-  <name>c10n-ext-guice</name>
+  <name>c10n-java-test-project</name>
 
   <dependencies>
     <dependency>
       <groupId>com.digibelt.c10n</groupId>
       <artifactId>c10n-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.digibelt.c10n</groupId>
+      <artifactId>c10n-ext-guice</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -26,19 +31,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.11</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>4.2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-assistedinject</artifactId>
-      <version>4.2.0</version>
+      <groupId>com.digibelt.c10n</groupId>
+      <artifactId>c10n-ext-guice</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -49,20 +46,5 @@
 
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+  <build></build>
 </project>

@@ -19,18 +19,19 @@
 
 package com.github.rodionmoiseev.c10n.guice;
 
-import com.github.rodionmoiseev.c10n.C10N;
-import com.github.rodionmoiseev.c10n.C10NMessages;
-import com.google.inject.AbstractModule;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.github.rodionmoiseev.c10n.C10N;
+import com.github.rodionmoiseev.c10n.C10NMessages;
+import com.google.inject.AbstractModule;
 
 @SuppressWarnings("WeakerAccess")//rationale: public API
 public class C10NModule extends AbstractModule {
@@ -44,7 +45,7 @@ public class C10NModule extends AbstractModule {
         return new C10NModule(packagePrefixes);
     }
 
-    private C10NModule(String[] packagePrefixes) {
+    public C10NModule(String... packagePrefixes) {
         this.packagePrefixes = packagePrefixes;
     }
 

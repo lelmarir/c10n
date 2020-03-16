@@ -19,6 +19,7 @@
     <module>core</module>
     <module>tools</module>
     <module>ext-guice</module>
+    <module>icu4j-message-formatter</module>
     <module>test-projects/java</module>
   </modules>
 

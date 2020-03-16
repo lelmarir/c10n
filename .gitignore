@@ -32,3 +32,8 @@ build/
 # Mac stuff
 #
 .DS_Store
+
+#
+# Build
+#
+**/target/*

@@ -74,6 +74,7 @@ final class EnumMappingFilter<E extends Enum<?>> implements C10NFilter<E> {
     public Object apply(E arg) {
         Method m = c10nInfMethodMapping.get(arg);
         try {
+            m.setAccessible(true);
             return m.invoke(enumC10NInterfaceInstance);
         } catch (Exception e) {
             throw new RuntimeException("Failed to dispatch invocation to " +

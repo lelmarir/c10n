@@ -19,36 +19,54 @@
 
 package com.github.rodionmoiseev.c10n.guice;
 
-import com.github.rodionmoiseev.c10n.*;
-import com.github.rodionmoiseev.c10n.annotations.DefaultC10NAnnotations;
-import com.github.rodionmoiseev.c10n.test.utils.RuleUtils;
-import com.google.inject.Guice;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+
+import com.github.rodionmoiseev.c10n.C10NConfigBase;
+import com.github.rodionmoiseev.c10n.C10NDef;
+import com.github.rodionmoiseev.c10n.C10NEnumMessages;
+import com.github.rodionmoiseev.c10n.C10NMessages;
+import com.github.rodionmoiseev.c10n.annotations.DefaultC10NAnnotations;
+import com.google.inject.Guice;
 
 public class GuiceLoaderTest {
-    @Rule
-    public TestRule tmpC10N = RuleUtils.tmpC10NConfiguration(new C10NConfigBase() {
-        @Override
-        protected void configure() {
-            install(new DefaultC10NAnnotations());
-        }
-    });
 
     @Test
     public void guiceTest() {
-        MyGuiceMessages msg = Guice.createInjector(C10NModule.scanAllPackages())
-                .getInstance(MyGuiceMessages.class);
+        MyGuiceMessages msg = Guice.createInjector(C10NModule.scanAllPackages().addC10NConfig(new C10NConfigBase() {
+            @Override
+            protected void configure() {
+                install(new DefaultC10NAnnotations());
+            }
+        })).getInstance(MyGuiceMessages.class);
         assertThat(msg.greet(), is("Hello, Guice!"));
+
+        assertThat(msg.iHaveAPet(Animal.CAT), is("I have a cat!"));
+        assertThat(msg.iHaveAPet(Animal.DOG), is("I have a dog!"));
     }
+}
+
+enum Animal {
+    CAT, DOG;
+}
+
+@C10NMessages
+@C10NEnumMessages(Animal.class)
+interface AnimalMessages {
+    @C10NDef("cat")
+    String cat();
+
+    @C10NDef("dog")
+    String dog();
 }
 
 @C10NMessages
 interface MyGuiceMessages {
     @C10NDef("Hello, Guice!")
     String greet();
+
+    @C10NDef("I have a {0}!")
+    String iHaveAPet(Animal animal);
 }

@@ -21,6 +21,8 @@ package com.github.rodionmoiseev.c10n.guice;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,12 +32,18 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
 import com.github.rodionmoiseev.c10n.C10N;
+import com.github.rodionmoiseev.c10n.C10NConfigBase;
+import com.github.rodionmoiseev.c10n.C10NEnumMessages;
+import com.github.rodionmoiseev.c10n.C10NFilters;
 import com.github.rodionmoiseev.c10n.C10NMessages;
 import com.google.inject.AbstractModule;
 
-@SuppressWarnings("WeakerAccess")//rationale: public API
+@SuppressWarnings("WeakerAccess") // rationale: public API
 public class C10NModule extends AbstractModule {
     private final String[] packagePrefixes;
+
+    private boolean configured = false;
+    private final List<C10NConfigBase> configs = new LinkedList<>();
 
     public static C10NModule scanAllPackages() {
         return scanPackages("");
@@ -52,20 +60,35 @@ public class C10NModule extends AbstractModule {
     @SuppressWarnings("unchecked")
     @Override
     protected void configure() {
-        Set<Class<?>> c10nTypes =
-                new Reflections(new ConfigurationBuilder().filterInputsBy(getPackageInputFilter()).setUrls(getPackageURLs()))
-                        .getTypesAnnotatedWith(C10NMessages.class);
+        Reflections reflections = new Reflections(
+                new ConfigurationBuilder().filterInputsBy(getPackageInputFilter()).setUrls(getPackageURLs()));
+
+        Set<Class<?>> c10nEnumTypes = reflections.getTypesAnnotatedWith(C10NEnumMessages.class);
+        C10N.configure(new C10NConfigBase() {
+            @Override
+            protected void configure() {
+                for (Class<?> c10nEnumType : c10nEnumTypes) {
+                    C10NEnumMessages annotation = c10nEnumType.getAnnotation(C10NEnumMessages.class);
+                    Class targetEnumType = annotation.value();
+                    bindFilter(C10NFilters.enumMapping(targetEnumType, c10nEnumType), targetEnumType);
+                }
+                configured = true;
+                for (C10NConfigBase config : configs) {
+                    install(config);
+                }
+            }
+        });
+
+        Set<Class<?>> c10nTypes = reflections.getTypesAnnotatedWith(C10NMessages.class);
         for (Class<?> c10nType : c10nTypes) {
             if (c10nType.isInterface()) {
-                bind((Class<Object>) c10nType)
-                        .toInstance(C10N.get(c10nType));
+                bind((Class<Object>) c10nType).toInstance(C10N.get(c10nType));
             }
         }
     }
 
     private Set<URL> getPackageURLs() {
-        return Arrays.asList(packagePrefixes).stream()
-                .flatMap(prefix -> ClasspathHelper.forPackage(prefix).stream())
+        return Arrays.asList(packagePrefixes).stream().flatMap(prefix -> ClasspathHelper.forPackage(prefix).stream())
                 .collect(Collectors.toSet());
     }
 
@@ -77,5 +100,13 @@ public class C10NModule extends AbstractModule {
         }
 
         return inputFilter;
+    }
+
+    public C10NModule addC10NConfig(C10NConfigBase... configs) {
+        if (configured) {
+            throw new IllegalStateException("Unale to add new configs after the moduled has already been configured.");
+        }
+        this.configs.addAll(Arrays.asList(configs));
+        return this;
     }
 }

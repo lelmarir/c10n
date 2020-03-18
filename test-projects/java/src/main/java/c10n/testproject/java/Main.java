@@ -43,8 +43,8 @@ public class Main {
     /*
      * Parse arguments
      */
-    boolean showHelp = true;
-    Locale locale = Locale.JAPAN;
+    boolean showHelp = false;
+    Locale locale = Locale.ENGLISH;
     String action = "none";
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];

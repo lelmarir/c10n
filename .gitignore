@@ -1,6 +1,7 @@
 #
 # Output files
 #
+*.class
 /core/target
 /ext-guice/target
 /tools/target

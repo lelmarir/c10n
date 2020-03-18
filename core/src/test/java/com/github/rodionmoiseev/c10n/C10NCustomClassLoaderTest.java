@@ -20,11 +20,11 @@
 
 package com.github.rodionmoiseev.c10n;
 
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import org.junit.Test;
 
 public class C10NCustomClassLoaderTest {
     @Test
